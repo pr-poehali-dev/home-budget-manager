@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 interface Transaction {
   id: string;
@@ -62,6 +63,45 @@ function Index() {
   const topCategories = Object.entries(expensesByCategory)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
+
+  const monthlyData = useMemo(() => {
+    const months = ['Сентябрь', 'Октябрь', 'Ноябрь'];
+    const data = [];
+
+    for (let i = 0; i < 3; i++) {
+      const monthDate = new Date(2025, 8 + i, 1);
+      const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.date);
+        return tDate.getMonth() === monthDate.getMonth() && tDate.getFullYear() === monthDate.getFullYear();
+      });
+
+      const monthIncome = monthTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      const monthExpense = monthTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      data.push({
+        month: months[i],
+        Доходы: monthIncome,
+        Расходы: monthExpense,
+        Баланс: monthIncome - monthExpense
+      });
+    }
+
+    return data;
+  }, [transactions]);
+
+  const categoryChartData = useMemo(() => {
+    return Object.entries(expensesByCategory).map(([name, value]) => ({
+      name,
+      value
+    }));
+  }, [expensesByCategory]);
+
+  const COLORS = ['hsl(199, 89%, 48%)', 'hsl(215, 25%, 15%)', 'hsl(142, 71%, 45%)', 'hsl(0, 84%, 60%)', 'hsl(280, 65%, 60%)'];
 
   const handleAddTransaction = () => {
     if (!formData.amount || !formData.category) return;
@@ -211,36 +251,91 @@ function Index() {
           </Card>
         </div>
 
+        <Card className="animate-scale-in col-span-full mb-8">
+          <CardHeader>
+            <CardTitle>Динамика доходов и расходов</CardTitle>
+            <CardDescription>График изменения финансов по месяцам</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 20%, 90%)" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="hsl(215, 15%, 50%)"
+                  style={{ fontSize: '12px' }}
+                />
+                <YAxis 
+                  stroke="hsl(215, 15%, 50%)"
+                  style={{ fontSize: '12px' }}
+                  tickFormatter={(value) => `${(value / 1000).toFixed(0)}к`}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(0, 0%, 100%)',
+                    border: '1px solid hsl(214, 20%, 90%)',
+                    borderRadius: '8px',
+                    padding: '12px'
+                  }}
+                  formatter={(value: number) => `${value.toLocaleString('ru-RU')} ₽`}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="Доходы" 
+                  stroke="hsl(142, 71%, 45%)" 
+                  strokeWidth={3}
+                  dot={{ fill: 'hsl(142, 71%, 45%)', r: 5 }}
+                  activeDot={{ r: 7 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="Расходы" 
+                  stroke="hsl(0, 84%, 60%)" 
+                  strokeWidth={3}
+                  dot={{ fill: 'hsl(0, 84%, 60%)', r: 5 }}
+                  activeDot={{ r: 7 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="Баланс" 
+                  stroke="hsl(199, 89%, 48%)" 
+                  strokeWidth={3}
+                  strokeDasharray="5 5"
+                  dot={{ fill: 'hsl(199, 89%, 48%)', r: 5 }}
+                  activeDot={{ r: 7 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
         <div className="grid gap-6 md:grid-cols-2 mb-8">
           <Card className="animate-scale-in">
             <CardHeader>
               <CardTitle>Расходы по категориям</CardTitle>
-              <CardDescription>Топ-5 категорий трат</CardDescription>
+              <CardDescription>Распределение трат</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {topCategories.map(([category, amount], index) => {
-                  const percentage = (amount / totalExpense) * 100;
-                  return (
-                    <div key={category} className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{category}</span>
-                        <span className="text-muted-foreground">{amount.toLocaleString('ru-RU')} ₽</span>
-                      </div>
-                      <div className="h-2 rounded-full bg-muted overflow-hidden">
-                        <div
-                          className="h-full bg-primary transition-all duration-500"
-                          style={{ 
-                            width: `${percentage}%`,
-                            animationDelay: `${index * 0.1}s`
-                          }}
-                        />
-                      </div>
-                      <div className="text-xs text-muted-foreground">{percentage.toFixed(1)}%</div>
-                    </div>
-                  );
-                })}
-              </div>
+            <CardContent className="flex items-center justify-center">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={categoryChartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {categoryChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => `${value.toLocaleString('ru-RU')} ₽`} />
+                </PieChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
 
