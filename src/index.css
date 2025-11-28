@@ -6,25 +6,25 @@
 
 @layer base {
   :root {
-    --background: 210 25% 98%;
-    --foreground: 215 25% 15%;
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
     --primary: 199 89% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 20% 30%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 199 89% 48%;
+    --accent: 280 65% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -33,11 +33,11 @@
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
 
-    --border: 214 20% 90%;
-    --input: 214 20% 90%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
     --ring: 199 89% 48%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -108,5 +108,47 @@
       BlinkMacSystemFont,
       "Segoe UI",
       sans-serif;
+  }
+
+  .gradient-card {
+    background: linear-gradient(
+      135deg,
+      hsl(222, 47%, 11%) 0%,
+      hsl(222, 47%, 14%) 100%
+    );
+    border: 1px solid hsl(217, 33%, 20%);
+  }
+
+  .gradient-primary {
+    background: linear-gradient(
+      135deg,
+      hsl(199, 89%, 48%) 0%,
+      hsl(280, 65%, 60%) 100%
+    );
+  }
+
+  .gradient-success {
+    background: linear-gradient(
+      135deg,
+      hsl(142, 71%, 45%) 0%,
+      hsl(160, 71%, 45%) 100%
+    );
+  }
+
+  .gradient-destructive {
+    background: linear-gradient(
+      135deg,
+      hsl(0, 84%, 60%) 0%,
+      hsl(340, 84%, 60%) 100%
+    );
+  }
+
+  .gradient-bg {
+    background: linear-gradient(
+      135deg,
+      hsl(222, 47%, 8%) 0%,
+      hsl(240, 47%, 10%) 50%,
+      hsl(222, 47%, 8%) 100%
+    );
   }
 }

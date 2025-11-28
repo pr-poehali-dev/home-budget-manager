@@ -121,13 +121,13 @@ function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card shadow-sm">
+    <div className="min-h-screen gradient-bg">
+      <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                <Icon name="Wallet" size={24} className="text-primary-foreground" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl gradient-primary shadow-lg">
+                <Icon name="Wallet" size={28} className="text-primary-foreground" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">ФинансАссистент</h1>
@@ -136,7 +136,7 @@ function Index() {
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="lg" className="gap-2">
+                <Button size="lg" className="gap-2 gradient-primary shadow-lg hover:shadow-xl transition-all">
                   <Icon name="Plus" size={20} />
                   Добавить операцию
                 </Button>
